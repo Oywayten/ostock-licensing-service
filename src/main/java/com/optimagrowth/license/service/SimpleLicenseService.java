@@ -1,8 +1,11 @@
 package com.optimagrowth.license.service;
 
 import com.optimagrowth.license.model.License;
+import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -10,7 +13,10 @@ import java.util.Random;
  */
 
 @Service
+@AllArgsConstructor
 public class SimpleLicenseService implements LicenseService {
+
+    private final MessageSource messages;
 
     @Override
     public License getLicense(String licenseId, String organizationId) {
@@ -25,31 +31,29 @@ public class SimpleLicenseService implements LicenseService {
     }
 
     @Override
-    public String createLicense(License license, String organizationId) {
+    public String createLicense(License license, String organizationId, Locale locale) {
         String responseMessage = null;
         if (license != null) {
             license.setOrganizationId(organizationId);
-            responseMessage = String.format("This is the post and the object is: %s", license);
+            responseMessage = messages.getMessage("license.create.message", new Object[]{license}, locale);
         }
         return responseMessage;
     }
 
     @Override
-    public String updateLicense(License license, String organizationId) {
+    public String updateLicense(License license, String organizationId, Locale locale) {
         String responseMessage = null;
         if (license != null) {
             license.setOrganizationId(organizationId);
-            responseMessage = String.format("This is the put and the object is: %s", license);
+            responseMessage = messages.getMessage("license.update.message", new Object[]{license}, locale);
         }
         return responseMessage;
     }
 
     @Override
-    public String deleteLicense(String licenseId, String organizationId){
+    public String deleteLicense(String licenseId, String organizationId, Locale locale) {
         String responseMessage;
-        responseMessage = String.format(
-                "Deleting license with id %s for the organization %s",
-                licenseId, organizationId);
+        responseMessage = messages.getMessage("license.delete.message", new Object[]{licenseId, organizationId}, locale);
         return responseMessage;
     }
 }

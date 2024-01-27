@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Locale;
+
 /**
  * Oywayten 27.01.2024.
  */
@@ -25,23 +27,29 @@ public class LicenseController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createLicense(@PathVariable("organizationId") String organizationId,
-                                                @RequestBody License license) {
-        String response = licenseService.createLicense(license, organizationId);
+    public ResponseEntity<String> createLicense(
+            @PathVariable("organizationId") String organizationId,
+            @RequestBody License license,
+            @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
+        String response = licenseService.createLicense(license, organizationId, locale);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping
-    public ResponseEntity<String> updateLicense(@PathVariable("organizationId") String organizationId,
-                                                @RequestBody License license) {
-        String response = licenseService.updateLicense(license, organizationId);
+    public ResponseEntity<String> updateLicense(
+            @PathVariable("organizationId") String organizationId,
+            @RequestBody License license,
+            @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
+        String response = licenseService.updateLicense(license, organizationId, locale);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{licenseId}")
-    public ResponseEntity<String> deleteLicense(@PathVariable("organizationId") String organizationId,
-                                                @PathVariable("licenseId") String licenseId) {
-        String response = licenseService.deleteLicense(licenseId, organizationId);
+    public ResponseEntity<String> deleteLicense(
+            @PathVariable("organizationId") String organizationId,
+            @PathVariable("licenseId") String licenseId,
+            @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
+        String response = licenseService.deleteLicense(licenseId, organizationId, locale);
         return ResponseEntity.ok(response);
     }
 }
