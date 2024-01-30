@@ -49,6 +49,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <layers>
+                        <enabled>true</enabled>
+                    </layers>
                     <imageName>
                         ${docker.image.prefix}/${project.artifactId}:latest
                     </imageName>
