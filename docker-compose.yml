@@ -1,16 +1,24 @@
 version: "3.8"
 
 services:
-  licensingservice:
-    image: ostock/licensing-service:0.0.1-SNAPSHOT
+
+  database:
+    image: postgres:latest
     ports:
-      - "8080:8080"
+      - "5432:5432"
     environment:
-      - "SPRING_PROFILES_ACTIVE=dev"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB:       "ostock_dev"
     networks:
       backend:
         aliases:
-          - "licenseservice"
+          - "database"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   configserver:
     image: ostock/configserver:0.0.1-SNAPSHOT
@@ -22,6 +30,18 @@ services:
       backend:
         aliases:
           - "configserver"
+
+  licensingservice:
+    image: ostock/licensing-service:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE:dev
+      - SPRING_CLOUD_CONFIG_URI:http://configserver:8071
+    networks:
+      backend:
+        aliases:
+          - "licenseservice"
 
 networks:
   backend:
