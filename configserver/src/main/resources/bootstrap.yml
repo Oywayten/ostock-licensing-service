@@ -9,6 +9,10 @@ spring:
       server:
         native:
           search-locations: classpath:/config
+        git:
+          uri: https://github.com/Oywayten/config.git
+          search-paths: licensing-service
+          default-label: master
+
 server:
   port: 8071
-
