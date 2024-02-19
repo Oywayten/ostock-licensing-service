@@ -8,7 +8,7 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_pass_secret
       POSTGRES_DB:       "ostock_dev"
     volumes:
       - ./db:/docker-entrypoint-initdb.d
@@ -21,13 +21,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    secrets:
+      - pg_pass_secret
 
   configserver:
     image: ostock/configserver:0.0.1-SNAPSHOT
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        echo 'configserver start up'
+        echo "\nencrypt:\n  key: $$(cat /run/secrets/mysec)" >> /app/bootstrap.yml
+        java -cp app:app/lib/* com.optimagrowth.configserver.ConfigServerApplication
     ports:
       - "8071:8071"
     environment:
-      - "SPRING_PROFILES_ACTIVE=native"
+      SPRING_PROFILES_ACTIVE: native, git
+    secrets:
+      - mysec
     networks:
       backend:
         aliases:
@@ -45,6 +56,12 @@ services:
         aliases:
           - "licenseservice"
 
+secrets:
+  mysec:
+    external: true
+  pg_pass_secret:
+    external: true
+
 networks:
   backend:
-    driver: bridge
+    driver: overlay
