@@ -1,9 +1,11 @@
+server:
+  port: 8071
+
 spring:
   application:
     name: config-server
   profiles:
     active: native
-
   cloud:
     config:
       server:
@@ -13,6 +15,7 @@ spring:
           uri: https://github.com/Oywayten/config.git
           search-paths: licensing-service
           default-label: master
+        vault:
+          kv-version: 2
+          host: vaultserver
 
-server:
-  port: 8071
