@@ -63,6 +63,15 @@ services:
         aliases:
           - "licenseservice"
 
+  eurekaserver:
+    image: ostock/eurekaserver:0.0.1-SNAPSHOT
+    ports:
+      - "8070:8070"
+    networks:
+      backend:
+        aliases:
+            - "eurekaserver"
+
 secrets:
   mysec:
     external: true
