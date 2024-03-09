@@ -7,7 +7,7 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      - /envs/pg.env
+      - /envs/database.env
     volumes:
       - ./db:/docker-entrypoint-initdb.d
     networks:
@@ -44,7 +44,7 @@ services:
     ports:
       - "8071:8071"
     env_file:
-      - /envs/config.env
+      - /envs/configserver.env
     secrets:
       - mysec
     networks:
@@ -57,7 +57,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - /envs/lic.env
+      - /envs/licensing-service.env
     networks:
       backend:
         aliases:
