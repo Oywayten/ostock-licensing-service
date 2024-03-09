@@ -72,6 +72,17 @@ services:
         aliases:
             - "eurekaserver"
 
+  organizationservice:
+    image: ostock/organization-service:0.0.1-SNAPSHOT
+    ports:
+      - "8070:8070"
+    env_file:
+      - /envs/organization-service.env
+    networks:
+      backend:
+        aliases:
+          - "organizationservice"
+
 secrets:
   mysec:
     external: true
