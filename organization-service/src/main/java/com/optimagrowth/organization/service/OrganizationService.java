@@ -15,8 +15,8 @@ public class OrganizationService {
     private final OrganizationRepository repository;
 
     public Organization findById(String organizationId) {
-        Optional<Organization> opt = repository.findById(organizationId);
-        return opt.orElse(null);
+        Optional<Organization> optional = repository.findById(organizationId);
+        return optional.orElse(null);
     }
 
     public Organization create(Organization organization){

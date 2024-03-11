@@ -8,8 +8,6 @@ COPY ${JAR_FILE} app.jar
 
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf /app.jar)
 
-RUN pwd
-
 FROM openjdk:21-slim
 
 VOLUME /tmp
