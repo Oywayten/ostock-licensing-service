@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -48,5 +49,9 @@ public class LicenseService {
         licenseRepository.delete(license);
         return messages.getMessage("license.delete.message",
                 new Object[]{license.getLicenseId(), license.getOrganizationId()}, Locale.getDefault());
+    }
+
+    public List<License> getLicensesByOrganization(String organizationId) {
+        return licenseRepository.findByOrganizationId(organizationId);
     }
 }

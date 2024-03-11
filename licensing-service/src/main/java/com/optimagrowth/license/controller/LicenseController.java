@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -49,5 +51,10 @@ public class LicenseController {
     public ResponseEntity<String> deleteLicense(@PathVariable("licenseId") String licenseId) {
         String response = licenseService.deleteLicense(licenseId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/")
+    public List<License> getLicenses(@PathVariable("organizationId") String organizationId) {
+        return licenseService.getLicensesByOrganization(organizationId);
     }
 }

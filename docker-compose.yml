@@ -7,7 +7,7 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      - /envs/pg.env
+      - /envs/database.env
     volumes:
       - ./db:/docker-entrypoint-initdb.d
     networks:
@@ -44,7 +44,7 @@ services:
     ports:
       - "8071:8071"
     env_file:
-      - /envs/config.env
+      - /envs/configserver.env
     secrets:
       - mysec
     networks:
@@ -57,11 +57,31 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - /envs/lic.env
+      - /envs/licensing-service.env
     networks:
       backend:
         aliases:
           - "licenseservice"
+
+  eurekaserver:
+    image: ostock/eurekaserver:0.0.1-SNAPSHOT
+    ports:
+      - "8070:8070"
+    networks:
+      backend:
+        aliases:
+            - "eurekaserver"
+
+  organizationservice:
+    image: ostock/organization-service:0.0.1-SNAPSHOT
+    ports:
+      - "8081:8081"
+    env_file:
+      - /envs/organization-service.env
+    networks:
+      backend:
+        aliases:
+          - "organizationservice"
 
 secrets:
   mysec:
