@@ -5,6 +5,7 @@ import com.optimagrowth.license.model.License;
 import com.optimagrowth.license.model.Organization;
 import com.optimagrowth.license.repository.LicenseRepository;
 import com.optimagrowth.license.service.client.OrganizationDiscoveryClient;
+import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -22,13 +23,16 @@ import java.util.UUID;
 public class LicenseService {
 
     public static final String DISCOVERY_TYPE = "discovery";
+    public static final String REST_TYPE = "rest";
     public static final String LICENSE_SEARCH_ERROR_MESSAGE = "license.search.error.message";
     public static final String DISCOVERY_CLIENT_MESSAGE = "I am using the discovery client";
+    public static final String REST_CLIENT_MESSAGE = "I am using the rest client";
     private final MessageSource messages;
     private final LicenseRepository licenseRepository;
     private final LicenseConfig config;
 
     private final OrganizationDiscoveryClient organizationDiscoveryClient;
+    private final OrganizationRestTemplateClient organizationRestTemplateClient;
 
     public License getLicense(String licenseId, String organizationId) {
         License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
@@ -39,7 +43,7 @@ public class LicenseService {
         return license.withComment(config.getExampleProperty());
     }
 
-    public License getLicense(String licenseId, String organizationId, String clientType) {
+    public License getLicense(String organizationId, String licenseId, String clientType) {
         License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
         if (null == license) {
             throw new IllegalArgumentException(messages.getMessage(LICENSE_SEARCH_ERROR_MESSAGE,
@@ -58,9 +62,15 @@ public class LicenseService {
     private Organization retrieveOrganizationInfo(String organizationId, String clientType) {
         Organization organization = null;
 
-        if (DISCOVERY_TYPE.equals(clientType)) {
-            System.out.println(DISCOVERY_CLIENT_MESSAGE);
-            organization = organizationDiscoveryClient.getOrganization(organizationId);
+        switch (clientType) {
+            case DISCOVERY_TYPE -> {
+                System.out.println(DISCOVERY_CLIENT_MESSAGE);
+                organization = organizationDiscoveryClient.getOrganization(organizationId);
+            }
+            case REST_TYPE -> {
+                System.out.println(REST_CLIENT_MESSAGE);
+                organization = organizationRestTemplateClient.getOrganization(organizationId);
+            }
         }
         return organization;
     }

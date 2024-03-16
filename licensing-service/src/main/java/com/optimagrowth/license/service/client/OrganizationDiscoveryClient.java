@@ -28,7 +28,8 @@ public class OrganizationDiscoveryClient {
             return organization;
         }
         String serviceUri =
-                String.format(ORGANIZATION_SERVICE_URI_PATTERN, instances.get(0).getUri().toString(), organizationId);
+                String.format(ORGANIZATION_SERVICE_URI_PATTERN, instances.get(0).getUri().toString(), "{organizationId}");
+        System.out.println("serviceUri" + serviceUri);
         ResponseEntity<Organization> restExchange =
                 restTemplate.exchange(serviceUri, HttpMethod.GET, null, Organization.class, organizationId);
         return restExchange.getBody();
