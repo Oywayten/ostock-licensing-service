@@ -15,6 +15,6 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "example")
 public class LicenseConfig {
 
-    private String property;
+    private String exampleProperty;
 
 }

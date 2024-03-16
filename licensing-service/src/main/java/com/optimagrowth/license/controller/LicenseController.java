@@ -35,6 +35,15 @@ public class LicenseController {
         return ResponseEntity.ok(license);
     }
 
+    @GetMapping("/{licenseId}/{clientType}")
+    public License getLicenseWithClient(
+            @PathVariable String organizationId,
+            @PathVariable String licenseId,
+            @PathVariable String clientType
+    ) {
+        return licenseService.getLicense(organizationId, licenseId, clientType);
+    }
+
     @PostMapping
     public ResponseEntity<License> createLicense(@RequestBody License license) {
         License savedLicense = licenseService.createLicense(license);

@@ -1,9 +1,6 @@
 package com.optimagrowth.license.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -28,6 +25,18 @@ public class License extends RepresentationModel<License> {
 
     @Column(nullable = false)
     private String organizationId;
+
+    @Transient
+    private String organizationName;
+
+    @Transient
+    private String contactName;
+
+    @Transient
+    private String contactEmail;
+
+    @Transient
+    private String contactPhone;
 
     @Column(nullable = false)
     private String productName;

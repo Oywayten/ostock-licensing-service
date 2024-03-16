@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public.organizations
+CREATE TABLE IF NOT EXISTS organizations
 (
     organization_id text COLLATE pg_catalog."default" NOT NULL,
     name text COLLATE pg_catalog."default",
@@ -10,11 +10,11 @@ CREATE TABLE IF NOT EXISTS public.organizations
 
 TABLESPACE pg_default;
 
-ALTER TABLE public.organizations
+ALTER TABLE organizations
     OWNER to postgres;
 
 
-CREATE TABLE IF NOT EXISTS public.licenses
+CREATE TABLE IF NOT EXISTS licenses
 (
     license_id text COLLATE pg_catalog."default" NOT NULL,
     organization_id text COLLATE pg_catalog."default" NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS public.licenses
     comment text COLLATE pg_catalog."default",
     CONSTRAINT licenses_pkey PRIMARY KEY (license_id),
     CONSTRAINT licenses_organization_id_fkey FOREIGN KEY (organization_id)
-        REFERENCES public.organizations (organization_id) MATCH SIMPLE
+        REFERENCES organizations (organization_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         NOT VALID
@@ -32,5 +32,5 @@ CREATE TABLE IF NOT EXISTS public.licenses
 
 TABLESPACE pg_default;
 
-ALTER TABLE public.licenses
+ALTER TABLE licenses
     OWNER to postgres;
