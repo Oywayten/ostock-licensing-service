@@ -33,7 +33,6 @@ public class LicenseService {
     private final MessageSource messages;
     private final LicenseRepository licenseRepository;
     private final LicenseConfig config;
-
     private final OrganizationDiscoveryClient organizationDiscoveryClient;
     private final OrganizationRestTemplateClient organizationRestTemplateClient;
     private final OrganizationFeignClient organizationFeignClient;
