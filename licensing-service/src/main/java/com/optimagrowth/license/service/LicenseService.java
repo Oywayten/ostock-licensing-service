@@ -5,6 +5,7 @@ import com.optimagrowth.license.model.License;
 import com.optimagrowth.license.model.Organization;
 import com.optimagrowth.license.repository.LicenseRepository;
 import com.optimagrowth.license.service.client.OrganizationDiscoveryClient;
+import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -24,15 +25,18 @@ public class LicenseService {
 
     public static final String DISCOVERY_TYPE = "discovery";
     public static final String REST_TYPE = "rest";
+    public static final String FEIGN_TYPE = "feign";
     public static final String LICENSE_SEARCH_ERROR_MESSAGE = "license.search.error.message";
     public static final String DISCOVERY_CLIENT_MESSAGE = "I am using the discovery client";
     public static final String REST_CLIENT_MESSAGE = "I am using the rest client";
+    public static final String FEIGN_CLIENT_MESSAGE = "I am using the feign client";
     private final MessageSource messages;
     private final LicenseRepository licenseRepository;
     private final LicenseConfig config;
 
     private final OrganizationDiscoveryClient organizationDiscoveryClient;
     private final OrganizationRestTemplateClient organizationRestTemplateClient;
+    private final OrganizationFeignClient organizationFeignClient;
 
     public License getLicense(String licenseId, String organizationId) {
         License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
@@ -70,6 +74,10 @@ public class LicenseService {
             case REST_TYPE -> {
                 System.out.println(REST_CLIENT_MESSAGE);
                 organization = organizationRestTemplateClient.getOrganization(organizationId);
+            }
+            case FEIGN_TYPE -> {
+                System.out.println(FEIGN_CLIENT_MESSAGE);
+                organization = organizationFeignClient.getOrganization(organizationId);
             }
         }
         return organization;
