@@ -81,6 +81,7 @@ public class LicenseService {
         return license.withComment(config.getExampleProperty());
     }
 
+    @CircuitBreaker(name="organizationService")
     private Organization retrieveOrganizationInfo(String organizationId, String clientType) {
         Organization organization = null;
 
