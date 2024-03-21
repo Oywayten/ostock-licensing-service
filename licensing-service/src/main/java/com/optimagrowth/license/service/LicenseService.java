@@ -7,35 +7,54 @@ import com.optimagrowth.license.repository.LicenseRepository;
 import com.optimagrowth.license.service.client.OrganizationDiscoveryClient;
 import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
-import lombok.AllArgsConstructor;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Oywayten 27.01.2024.
  */
 
 @Service
-@AllArgsConstructor
+@Slf4j
 public class LicenseService {
 
-    public static final String DISCOVERY_TYPE = "discovery";
-    public static final String REST_TYPE = "rest";
-    public static final String FEIGN_TYPE = "feign";
-    public static final String LICENSE_SEARCH_ERROR_MESSAGE = "license.search.error.message";
-    public static final String DISCOVERY_CLIENT_MESSAGE = "I am using the discovery client";
-    public static final String REST_CLIENT_MESSAGE = "I am using the rest client";
-    public static final String FEIGN_CLIENT_MESSAGE = "I am using the feign client";
+    private static final String DISCOVERY_TYPE = "discovery";
+    private static final String REST_TYPE = "rest";
+    private static final String FEIGN_TYPE = "feign";
+    private static final String LICENSE_SEARCH_ERROR_MESSAGE = "license.search.error.message";
+    private static final String DISCOVERY_CLIENT_MESSAGE = "I am using the discovery client";
+    private static final String REST_CLIENT_MESSAGE = "I am using the rest client";
+    private static final String FEIGN_CLIENT_MESSAGE = "I am using the feign client";
+    private static final String LICENSE_DELETE_MESSAGE = "license.delete.message";
+    private static final int RANDOM_SHIFT = 1;
+    private static final int RANDOM_BOUND = 3;
+
+    @Value("${sleep.duration}")
+    private int sleepDuration;
     private final MessageSource messages;
     private final LicenseRepository licenseRepository;
     private final LicenseConfig config;
     private final OrganizationDiscoveryClient organizationDiscoveryClient;
     private final OrganizationRestTemplateClient organizationRestTemplateClient;
     private final OrganizationFeignClient organizationFeignClient;
+
+    public LicenseService(MessageSource messages, LicenseRepository licenseRepository, LicenseConfig config, OrganizationDiscoveryClient organizationDiscoveryClient, OrganizationRestTemplateClient organizationRestTemplateClient, OrganizationFeignClient organizationFeignClient) {
+        this.messages = messages;
+        this.licenseRepository = licenseRepository;
+        this.config = config;
+        this.organizationDiscoveryClient = organizationDiscoveryClient;
+        this.organizationRestTemplateClient = organizationRestTemplateClient;
+        this.organizationFeignClient = organizationFeignClient;
+    }
 
     public License getLicense(String licenseId, String organizationId) {
         License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
@@ -97,11 +116,30 @@ public class LicenseService {
         License license = new License();
         license.setLicenseId(licenseId);
         licenseRepository.delete(license);
-        return messages.getMessage("license.delete.message",
+        return messages.getMessage(LICENSE_DELETE_MESSAGE,
                 new Object[]{license.getLicenseId(), license.getOrganizationId()}, Locale.getDefault());
     }
 
-    public List<License> getLicensesByOrganization(String organizationId) {
+    @CircuitBreaker(name = "licenseService")
+    public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
+        randomlyRunLong();
         return licenseRepository.findByOrganizationId(organizationId);
+    }
+
+    private void randomlyRunLong() throws TimeoutException {
+        Random random = new Random();
+        int randomNum = random.nextInt(RANDOM_BOUND) + RANDOM_SHIFT;
+        if (randomNum == RANDOM_BOUND) {
+            sleep();
+        }
+    }
+
+    private void sleep() throws TimeoutException {
+        try {
+            Thread.sleep(sleepDuration);
+            throw new TimeoutException("It was timeout exception" + sleepDuration + "ms");
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+        }
     }
 }
