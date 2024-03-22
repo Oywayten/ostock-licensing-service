@@ -35,8 +35,12 @@ public class LicenseService {
     private static final String REST_CLIENT_MESSAGE = "I am using the rest client";
     private static final String FEIGN_CLIENT_MESSAGE = "I am using the feign client";
     private static final String LICENSE_DELETE_MESSAGE = "license.delete.message";
-    private static final int RANDOM_SHIFT = 1;
-    private static final int RANDOM_BOUND = 3;
+
+    @Value("${random.shift}")
+    private int randomShift;
+
+    @Value("${random.bound}")
+    private int randomBound;
 
     @Value("${sleep.duration}")
     private int sleepDuration;
@@ -87,15 +91,15 @@ public class LicenseService {
 
         switch (clientType) {
             case DISCOVERY_TYPE -> {
-                System.out.println(DISCOVERY_CLIENT_MESSAGE);
+                log.info(DISCOVERY_CLIENT_MESSAGE);
                 organization = organizationDiscoveryClient.getOrganization(organizationId);
             }
             case REST_TYPE -> {
-                System.out.println(REST_CLIENT_MESSAGE);
+                log.info(REST_CLIENT_MESSAGE);
                 organization = organizationRestTemplateClient.getOrganization(organizationId);
             }
             case FEIGN_TYPE -> {
-                System.out.println(FEIGN_CLIENT_MESSAGE);
+                log.info(FEIGN_CLIENT_MESSAGE);
                 organization = organizationFeignClient.getOrganization(organizationId);
             }
         }
@@ -129,8 +133,8 @@ public class LicenseService {
 
     private void randomlyRunLong() throws TimeoutException {
         Random random = new Random();
-        int randomNum = random.nextInt(RANDOM_BOUND) + RANDOM_SHIFT;
-        if (randomNum == RANDOM_BOUND) {
+        int randomNum = random.nextInt(randomBound) + randomShift;
+        if (randomNum == randomBound) {
             sleep();
         }
     }
