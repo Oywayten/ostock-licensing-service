@@ -7,16 +7,16 @@ import com.optimagrowth.license.repository.LicenseRepository;
 import com.optimagrowth.license.service.client.OrganizationDiscoveryClient;
 import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -85,7 +85,7 @@ public class LicenseService {
         return license.withComment(config.getExampleProperty());
     }
 
-    @CircuitBreaker(name="organizationService")
+    @CircuitBreaker(name = "organizationService")
     private Organization retrieveOrganizationInfo(String organizationId, String clientType) {
         Organization organization = null;
 
@@ -125,10 +125,23 @@ public class LicenseService {
                 new Object[]{license.getLicenseId(), license.getOrganizationId()}, Locale.getDefault());
     }
 
-    @CircuitBreaker(name = "licenseService")
+    @CircuitBreaker(name = "licenseService", fallbackMethod = "buildFallbackLicenseList")
+    @RateLimiter(name = "licenseService", fallbackMethod = "buildFallbackLicenseList")
+    @Retry(name = "retryLicenseService", fallbackMethod = "buildFallbackLicenseList")
+    @Bulkhead(name = "bulkheadLicenseService", fallbackMethod = "buildFallbackLicenseList")
     public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
         randomlyRunLong();
         return licenseRepository.findByOrganizationId(organizationId);
+    }
+
+    private List<License> buildFallbackLicenseList(String organizationId, Throwable t) {
+        List<License> fallbackList = new ArrayList<>();
+        License license = new License();
+        license.setLicenseId("0000000-00-00000");
+        license.setLicenseId(organizationId);
+        license.setProductName("Sorry no licensing information currently available");
+        fallbackList.add(license);
+        return fallbackList;
     }
 
     private void randomlyRunLong() throws TimeoutException {
@@ -142,7 +155,7 @@ public class LicenseService {
     private void sleep() throws TimeoutException {
         try {
             Thread.sleep(sleepDuration);
-            throw new TimeoutException("It was timeout exception" + sleepDuration + "ms");
+            throw new TimeoutException("It was timeout exception " + sleepDuration + " ms");
         } catch (InterruptedException e) {
             log.error(e.getMessage());
         }

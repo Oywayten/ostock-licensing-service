@@ -6,6 +6,7 @@ spring:
   cloud:
     config:
       uri: http://configserver:8071
+
 resilience4j:
   circuitbreaker:
     instances:
@@ -28,3 +29,25 @@ resilience4j:
         wait-duration-in-open-state:
           seconds: 20
         failure-rate-threshold: 60
+  ratelimiter:
+    instances:
+      licenseService:
+        timeout-duration:
+          seconds: 1
+        limit-refresh-period:
+          seconds: 5
+        limit-for-period: 5
+  retry:
+    instances:
+      retryLicenseService:
+        max-attempts: 5
+        wait-duration:
+          seconds: 10
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+  bulkhead:
+    instances:
+      bulkheadLicenseService:
+        max-wait-duration:
+          nanos: 20000000
+        max-concurrent-calls: 20
