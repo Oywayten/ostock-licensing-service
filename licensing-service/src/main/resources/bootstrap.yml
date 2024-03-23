@@ -11,7 +11,6 @@ resilience4j:
   circuitbreaker:
     instances:
       licenseService:
-        register-health-indicator: true
         sliding-window-size: 5
         permitted-number-of-calls-in-half-open-state: 3
         wait-duration-in-open-state:
@@ -23,7 +22,6 @@ resilience4j:
           - java.util.concurrent.TimeoutException
           - org.springframework.web.client.ResourceAccessException
       organizationService:
-        register-health-indicator: true
         sliding-window-size: 6
         permitted-number-of-calls-in-half-open-state: 4
         wait-duration-in-open-state:

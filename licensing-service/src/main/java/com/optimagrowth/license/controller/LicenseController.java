@@ -2,7 +2,10 @@ package com.optimagrowth.license.controller;
 
 import com.optimagrowth.license.model.License;
 import com.optimagrowth.license.service.LicenseService;
+import com.optimagrowth.license.service.utils.UserContext;
+import com.optimagrowth.license.service.utils.UserContextHolder;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +22,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/v1/organization/{organizationId}/license")
 @AllArgsConstructor
+@Slf4j
 public class LicenseController {
 
     private final LicenseService licenseService;
@@ -65,6 +69,11 @@ public class LicenseController {
 
     @GetMapping("/")
     public List<License> getLicenses(@PathVariable("organizationId") String organizationId) throws TimeoutException {
+        log.debug("LicenseController Correlation id: {}", getUserContext().getCorrelationId());
         return licenseService.getLicensesByOrganization(organizationId);
+    }
+
+    private UserContext getUserContext() {
+        return UserContextHolder.getContext();
     }
 }
