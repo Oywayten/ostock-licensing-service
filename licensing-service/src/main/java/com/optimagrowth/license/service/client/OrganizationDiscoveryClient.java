@@ -17,9 +17,9 @@ import java.util.List;
 public class OrganizationDiscoveryClient {
 
     private static final String ORGANIZATION_SERVICE_URI_PATTERN = "%s/v1/organization/%s";
-    public static final String ORGANIZATION_SERVICE = "organization-service";
-    public static final String ORGANIZATION_ID_PLACEHOLDER = "{organizationId}";
-    public static final String SERVICE_URI = "serviceUri";
+    private static final String ORGANIZATION_SERVICE = "organization-service";
+    private static final String ORGANIZATION_ID_PLACEHOLDER = "{organizationId}";
+    private static final String SERVICE_URI = "serviceUri";
     private final DiscoveryClient discoveryClient;
 
     public Organization getOrganization(String organizationId) {

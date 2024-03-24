@@ -7,12 +7,12 @@ import com.optimagrowth.license.repository.LicenseRepository;
 import com.optimagrowth.license.service.client.OrganizationDiscoveryClient;
 import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
-import com.optimagrowth.license.service.utils.UserContext;
 import com.optimagrowth.license.service.utils.UserContextHolder;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -27,6 +27,7 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class LicenseService {
 
     private static final String DISCOVERY_TYPE = "discovery";
@@ -46,21 +47,13 @@ public class LicenseService {
 
     @Value("${sleep.duration}")
     private int sleepDuration;
+
     private final MessageSource messages;
     private final LicenseRepository licenseRepository;
     private final LicenseConfig config;
     private final OrganizationDiscoveryClient organizationDiscoveryClient;
     private final OrganizationRestTemplateClient organizationRestTemplateClient;
     private final OrganizationFeignClient organizationFeignClient;
-
-    public LicenseService(MessageSource messages, LicenseRepository licenseRepository, LicenseConfig config, OrganizationDiscoveryClient organizationDiscoveryClient, OrganizationRestTemplateClient organizationRestTemplateClient, OrganizationFeignClient organizationFeignClient) {
-        this.messages = messages;
-        this.licenseRepository = licenseRepository;
-        this.config = config;
-        this.organizationDiscoveryClient = organizationDiscoveryClient;
-        this.organizationRestTemplateClient = organizationRestTemplateClient;
-        this.organizationFeignClient = organizationFeignClient;
-    }
 
     public License getLicense(String licenseId, String organizationId) {
         License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
@@ -132,7 +125,7 @@ public class LicenseService {
     @Retry(name = "retryLicenseService", fallbackMethod = "buildFallbackLicenseList")
     @Bulkhead(name = "bulkheadLicenseService", fallbackMethod = "buildFallbackLicenseList")
     public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
-        log.debug("LicenseService Correlation id: {}", getUserContext().getCorrelationId());
+        log.debug("LicenseService Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
         randomlyRunLong();
         return licenseRepository.findByOrganizationId(organizationId);
     }
@@ -162,9 +155,5 @@ public class LicenseService {
         } catch (InterruptedException e) {
             log.error(e.getMessage());
         }
-    }
-
-    private UserContext getUserContext() {
-        return UserContextHolder.getContext();
     }
 }
