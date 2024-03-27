@@ -19,6 +19,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 
 @RestController
+// FIXME: 27.03.2024 check path correct to REST rules
+// FIXME: 27.03.2024 add readme file
 @RequestMapping("/v1/organization/{organizationId}/license")
 @AllArgsConstructor
 @Slf4j
