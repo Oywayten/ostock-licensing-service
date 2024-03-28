@@ -83,6 +83,15 @@ services:
         aliases:
           - "organizationservice"
 
+  gatewayserver:
+    image: ostock/gatewayserver:0.0.1-SNAPSHOT
+    ports:
+      - "8072:8072"
+    networks:
+      backend:
+        aliases:
+          - "gatewayserver"
+
 secrets:
   mysec:
     external: true
