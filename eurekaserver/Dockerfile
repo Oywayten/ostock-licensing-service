@@ -1,4 +1,4 @@
-FROM openjdk:21-slim as build
+FROM openjdk:17-slim as build
 
 LABEL maintainer="Oywayten <oywayten@gmail.com>"
 
@@ -10,7 +10,7 @@ RUN mkdir -p target/dependency && (cd target/dependency; jar -xf /app.jar)
 
 RUN pwd
 
-FROM openjdk:21-slim
+FROM openjdk:17-slim
 
 VOLUME /tmp
 
