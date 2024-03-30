@@ -17,7 +17,8 @@
 
 + Java 17;
 + Maven;
-+ Spring boot 3;
++ Spring Boot 3.2.4;
++ Spring Cloud 2023.0.1
 + Spring Data;
 + Spring Config Server;
 + Netflix Eureka;
