@@ -134,7 +134,7 @@ public class LicenseService {
         List<License> fallbackList = new ArrayList<>();
         License license = new License();
         license.setLicenseId("0000000-00-00000");
-        license.setLicenseId(organizationId);
+        license.setOrganizationId(organizationId);
         license.setProductName("Sorry no licensing information currently available");
         fallbackList.add(license);
         return fallbackList;

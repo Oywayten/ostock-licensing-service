@@ -19,7 +19,6 @@ public class OrganizationDiscoveryClient {
     private static final String ORGANIZATION_SERVICE_URI_PATTERN = "%s/v1/organization/%s";
     private static final String ORGANIZATION_SERVICE = "organization-service";
     private static final String ORGANIZATION_ID_PLACEHOLDER = "{organizationId}";
-    private static final String SERVICE_URI = "serviceUri";
     private final DiscoveryClient discoveryClient;
 
     public Organization getOrganization(String organizationId) {
@@ -32,7 +31,6 @@ public class OrganizationDiscoveryClient {
         }
         String serviceUri = String.format(ORGANIZATION_SERVICE_URI_PATTERN, instances.get(0).getUri().toString(),
                 ORGANIZATION_ID_PLACEHOLDER);
-        System.out.println(SERVICE_URI + serviceUri);
         ResponseEntity<Organization> restExchange =
                 restTemplate.exchange(serviceUri, HttpMethod.GET, null, Organization.class, organizationId);
         return restExchange.getBody();
